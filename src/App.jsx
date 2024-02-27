@@ -1,83 +1,65 @@
-
-import React,{useEffect,useState} from 'react';
+import React, { useCallback, useEffect, useState, useMemo } from 'react';
 import './App.css';
 
 // Do not change this
 const LARGE_NUMBER = 1000000000;
 
 function App() {
-
-
-  const [value, setValue] = useState(0);
-  const [dark, setTheme] = useState(true);
+  const [counter, setCounter] = useState(0);
+  const [isDarkTheme, setIsDarkTheme] = useState(true);
   const [themeName, setThemeName] = useState("dark");
-  const [currentList, setList] = useState([]);
-
+  const [listData, setListData] = useState([]);
 
   // should not change the LOGIC inside this function - you can make changes to the function but logic should NOT change
-  const delayFunction = ()=> {
+  const delayFunctioning = () => {
     console.log("Delay Function Ran")
-    for(let index=0; index<LARGE_NUMBER; index++){};
-    return value+2;
-  
+    for (let index = 0; index < LARGE_NUMBER; index++) { };
+    return counter + 2;
   }
 
   // should not change the LOGIC inside this function - you can make changes to the function but logic should NOT change
-  const testFunction = ()=>{
-    return [value*3 ,value*4]
-  }
-
-  
+  const testFunctioning = useCallback(() => {
+    return [counter * 3, counter * 4];
+  }, [counter]);
 
   // should not change this
-  useEffect(()=>{
+  useEffect(() => {
     console.log("Callback Function was called")
-  },[testFunction])
+  }, [testFunctioning]);
 
+  useEffect(() => {
+    setThemeName(isDarkTheme ? "dark" : "light");
+  }, [isDarkTheme]);
 
-
-  useEffect(()=>{
-    if(dark){
-      setThemeName("dark")
-    }
-    else{
-      setThemeName("light")
-    }
-  },[dark])
-
-
-  const handleClick = ()=>{
-    setTheme(!dark);
+  const handleToggle = () => {
+    setIsDarkTheme(!isDarkTheme);
   }
 
-  const handleChangeValue = ()=>{
-    setValue(value+1);
+  const handleCounter = () => {
+    setCounter(prevCounter => prevCounter + 1);
   }
 
-  const handleList = ()=>{
-    setList(testFunction);
+  const handleList = () => {
+    setListData(testFunctioning);
   }
 
-  const styleTheme = {
-   backgroundColor:dark ? "black":"#ccc7c7",
+  const themeStyleing = {
+    backgroundColor: isDarkTheme ? "black" : "#ccc7c7",
   }
 
   return (
-    
-    <div className="page" style={styleTheme}>
-      <button onClick={handleClick}>{themeName}</button>
-      <h1 >{value}</h1>
-      <button onClick={handleChangeValue}>Change Value</button>
+    <div className="page" style={themeStyleing}>
+      <button onClick={handleToggle}>{themeName}</button>
+      <h1>{counter}</h1>
+      <button onClick={handleCounter}>Change Counter</button>
       <button onClick={handleList}>Show List</button>
-      <h2>{delayFunction()}</h2>
+      <h2>{useMemo(() => delayFunctioning(), [counter])}</h2>
       <div>
-        {currentList.map((item,index)=>{
+        {listData.map((item, index) => {
           return <h2 key={index}>{item}</h2>
         })}
-
       </div>
     </div>
-    
   );
 }
 
